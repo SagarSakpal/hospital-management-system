@@ -1,0 +1,42 @@
+name: Build
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore .NET
+      run: dotnet restore ./src/Hospital.sln
+
+    - name: Build .NET
+      run: dotnet build ./src/Hospital.sln --no-restore
+
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install Angular
+      run: npm install -g @angular/cli
+
+    - name: Install Angular packages
+      run: npm install
+      working-directory: ./src/web/hospital-web
+
+    - name: Build Angular
+      run: ng build
+      working-directory: ./src/web/hospital-web
