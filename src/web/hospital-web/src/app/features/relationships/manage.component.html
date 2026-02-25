@@ -1,0 +1,93 @@
+<div class="page">
+  <div class="page-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">link</mat-icon>
+      <h2>Doctor–Patient Relationships</h2>
+    </div>
+  </div>
+
+  <div class="assignment-section mat-elevation-z2">
+    <h3>
+      <mat-icon>add_link</mat-icon>
+      Assign Relationship
+    </h3>
+    <form [formGroup]="form" class="selectors">
+      <mat-form-field appearance="outline">
+        <mat-label>Select Doctor</mat-label>
+        <mat-select formControlName="doctorId">
+          <mat-option *ngFor="let d of doctors" [value]="d.id">
+            <mat-icon>person</mat-icon>
+            {{ d.name }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>local_hospital</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Select Patient</mat-label>
+        <mat-select formControlName="patientId">
+          <mat-option *ngFor="let p of patients" [value]="p.id">
+            <mat-icon>person</mat-icon>
+            {{ p.name }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>group</mat-icon>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="assign()" [disabled]="!canManage() || form.invalid">
+        <mat-icon>add</mat-icon>
+        Assign
+      </button>
+    </form>
+  </div>
+
+  <div class="lists">
+    <div class="card mat-elevation-z2">
+      <div class="card-header">
+        <mat-icon>people</mat-icon>
+        <h3>Patients for Selected Doctor</h3>
+      </div>
+      <div class="card-content">
+        <div *ngIf="doctorLinks.length === 0" class="empty-state">
+          <mat-icon>person_off</mat-icon>
+          <p>No patients assigned yet</p>
+        </div>
+        <ul *ngIf="doctorLinks.length > 0">
+          <li *ngFor="let link of doctorLinks" class="list-item">
+            <div class="item-info">
+              <mat-icon class="item-icon">badge</mat-icon>
+              <span class="item-name">{{ getPatientName(link.patientId) }}</span>
+            </div>
+            <button mat-icon-button color="warn" (click)="unassign(link)" [disabled]="!canManage()" matTooltip="Unassign Patient">
+              <mat-icon>link_off</mat-icon>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card mat-elevation-z2">
+      <div class="card-header">
+        <mat-icon>medical_services</mat-icon>
+        <h3>Doctors for Selected Patient</h3>
+      </div>
+      <div class="card-content">
+        <div *ngIf="patientLinks.length === 0" class="empty-state">
+          <mat-icon>medical_information</mat-icon>
+          <p>No doctors assigned yet</p>
+        </div>
+        <ul *ngIf="patientLinks.length > 0">
+          <li *ngFor="let link of patientLinks" class="list-item">
+            <div class="item-info">
+              <mat-icon class="item-icon">local_hospital</mat-icon>
+              <span class="item-name">{{ getDoctorName(link.doctorId) }}</span>
+            </div>
+            <button mat-icon-button color="warn" (click)="unassign(link)" [disabled]="!canManage()" matTooltip="Unassign Doctor">
+              <mat-icon>link_off</mat-icon>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

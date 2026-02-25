@@ -1,0 +1,125 @@
+<div class="page">
+  <div class="page-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">group</mat-icon>
+      <h2>Patients Registry</h2>
+    </div>
+    <div class="actions" *ngIf="canManage()">
+      <button mat-raised-button color="primary" (click)="add()">
+        <mat-icon>person_add</mat-icon>
+        Add Patient
+      </button>
+    </div>
+  </div>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate" class="loading-bar"></mat-progress-bar>
+
+  <!-- Search Section -->
+  <div class="search-section" *ngIf="!loading">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>
+        <mat-icon>search</mat-icon>
+        Search Patients
+      </mat-label>
+      <input matInput [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Search by name, gender, contact, or condition">
+      <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="clearSearch()" matTooltip="Clear search">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <div class="table-container" *ngIf="!loading">
+    <table mat-table [dataSource]="filteredRows" class="patients-table mat-elevation-z2">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="header-cell">
+            <mat-icon>badge</mat-icon>
+            <span>Name</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let r">
+          <div class="cell-content">
+            <strong>{{ r.name }}</strong>
+          </div>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="dob">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="header-cell">
+            <mat-icon>cake</mat-icon>
+            <span>Date of Birth</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let r">
+          <span class="dob-text">{{ r.dob | date:'mediumDate' }}</span>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="gender">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="header-cell">
+            <mat-icon>wc</mat-icon>
+            <span>Gender</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let r">
+          <span class="badge gender-badge" [class.male]="r.gender === 'Male'" [class.female]="r.gender === 'Female'">
+            {{ r.gender }}
+          </span>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="condition">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="header-cell">
+            <mat-icon>medical_information</mat-icon>
+            <span>Condition</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let r">
+          <div class="condition-text">{{ r.condition }}</div>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="contact">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="header-cell">
+            <mat-icon>phone</mat-icon>
+            <span>Contact</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let r">
+          <div class="contact-info">
+            <mat-icon class="contact-icon">contact_phone</mat-icon>
+            {{ r.contact }}
+          </div>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+        <td mat-cell *matCellDef="let r" class="actions-cell">
+          <button mat-icon-button color="primary" (click)="edit(r.id)" *ngIf="canManage()">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="remove(r.id)" *ngIf="canManage()">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+    </table>
+
+    <div class="empty-state" *ngIf="rows.length === 0">
+      <mat-icon>personal_injury</mat-icon>
+      <p>No patients found</p>
+      <button mat-raised-button color="primary" (click)="add()" *ngIf="canManage()">
+        <mat-icon>person_add</mat-icon>
+        Add First Patient
+      </button>
+    </div>
+  </div>
+</div>

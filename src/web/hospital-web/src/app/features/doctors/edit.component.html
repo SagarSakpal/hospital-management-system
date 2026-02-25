@@ -1,0 +1,83 @@
+<div class="page">
+  <div class="page-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">{{ id ? 'edit' : 'person_add' }}</mat-icon>
+      <h2>{{ id ? 'Edit Doctor' : 'Create Doctor' }}</h2>
+    </div>
+  </div>
+
+  <div class="form-container mat-elevation-z2">
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <mat-form-field appearance="outline">
+        <mat-label>User Id</mat-label>
+        <mat-icon matPrefix>account_circle</mat-icon>
+        <input matInput formControlName="userId" required>
+        <mat-error *ngIf="form.get('userId')?.hasError('required')">
+          User Id is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <mat-icon matPrefix>person</mat-icon>
+        <input matInput formControlName="name" required>
+        <mat-error *ngIf="form.get('name')?.hasError('required')">
+          Name is required
+        </mat-error>
+        <mat-error *ngIf="form.get('name')?.hasError('maxlength')">
+          Name cannot exceed 100 characters
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Specialization Id</mat-label>
+        <mat-icon matPrefix>medical_services</mat-icon>
+        <input matInput formControlName="specializationId" type="number" required>
+        <mat-error *ngIf="form.get('specializationId')?.hasError('required')">
+          Specialization Id is required
+        </mat-error>
+        <mat-error *ngIf="form.get('specializationId')?.hasError('min')">
+          Specialization Id must be greater than 0
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Experience (years)</mat-label>
+        <mat-icon matPrefix>workspace_premium</mat-icon>
+        <input matInput formControlName="experienceYears" type="number" required>
+        <mat-error *ngIf="form.get('experienceYears')?.hasError('required')">
+          Experience is required
+        </mat-error>
+        <mat-error *ngIf="form.get('experienceYears')?.hasError('min')">
+          Experience cannot be negative
+        </mat-error>
+        <mat-error *ngIf="form.get('experienceYears')?.hasError('max')">
+          Experience cannot exceed 60 years
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Contact</mat-label>
+        <mat-icon matPrefix>phone</mat-icon>
+        <input matInput formControlName="contact" required>
+        <mat-error *ngIf="form.get('contact')?.hasError('required')">
+          Contact is required
+        </mat-error>
+        <mat-error *ngIf="form.get('contact')?.hasError('maxlength')">
+          Contact cannot exceed 100 characters
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading || form.invalid">
+          <mat-icon>{{ id ? 'save' : 'add' }}</mat-icon>
+          {{ id ? 'Update' : 'Create' }}
+        </button>
+        <button mat-button type="button" (click)="cancel()">
+          <mat-icon>close</mat-icon>
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

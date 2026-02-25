@@ -1,0 +1,512 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>README</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #bdc3c7;
+            padding-bottom: 8px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 25px;
+        }
+        pre, code {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+        }
+        code {
+            padding: 2px 6px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+<pre>
+# Hospital Management System - Documentation Index
+
+## ðŸ“‹ Project Overview
+
+This repository contains complete documentation for the Hospital Management System, a comprehensive healthcare management platform built with **.NET Core 8**, **Angular 18**, and **SQL Server**.
+
+---
+
+## ðŸ“š Documentation Structure
+
+### 1. [Project Plan](./01-Project-Plan.md)
+**Purpose:** Complete project roadmap and timeline
+
+**Contents:**
+- 8-12 week development timeline
+- Phase-wise breakdown (Planning, Backend, Frontend, Testing, Deployment)
+- Sprint goals and deliverables
+- Resource requirements
+- Risk management
+- Success criteria
+- Quality metrics
+
+**Use Case:** Share with stakeholders and management for approval and tracking
+
+---
+
+### 2. [System Architecture](./02-System-Architecture.md)
+**Purpose:** Technical architecture and design decisions
+
+**Contents:**
+- Layered architecture diagram (4-tier)
+- Component interactions
+- Design patterns (Repository, Unit of Work, DI)
+- SOLID principles implementation
+- Technology stack details
+- Security architecture
+- Scalability considerations
+- Caching strategy
+
+**Use Case:** Technical review, onboarding new developers, architecture discussions
+
+---
+
+### 3. [Database Schema & ER Diagrams](./03-Database-Schema-ER-Diagram.md)
+**Purpose:** Complete database design and relationships
+
+**Contents:**
+- Entity Relationship Diagram (Visual)
+- Table schemas with DDL scripts
+- All relationships (1:1, 1:M, M:N)
+- Indexes and constraints
+- Sample data
+- Migration scripts
+- Normalization (3NF)
+
+**Tables:**
+- Users
+- Doctors
+- Patients
+- Specializations
+- DoctorPatients (junction)
+- Appointments
+- MedicalRecords
+
+**Use Case:** Database implementation, query optimization, data modeling discussions
+
+---
+
+### 4. [Sequence Diagrams](./04-Sequence-Diagrams.md)
+**Purpose:** Detailed flow of operations
+
+**Contents:**
+- User authentication flow
+- Doctor/Patient registration
+- Appointment booking with conflict detection
+- Medical record creation
+- Doctor-patient assignment
+- Search functionality
+- Token refresh mechanism
+
+**Use Case:** Understanding system behavior, implementation reference, testing scenarios
+
+---
+
+### 5. [API Documentation](./05-API-Documentation.md)
+**Purpose:** Complete REST API reference
+
+**Contents:**
+- All endpoints with request/response examples
+- Authentication & authorization
+- Query parameters
+- Error responses
+- HTTP status codes
+- Rate limiting
+- API versioning
+
+**Endpoint Categories:**
+- Authentication (Login, Refresh, Logout)
+- Doctors (CRUD + Search)
+- Patients (CRUD + Search)
+- Appointments (CRUD + Scheduling)
+- Medical Records (CRUD + Audit)
+- Doctor-Patient Relationships
+
+**Use Case:** Frontend development, API testing, integration, Postman collections
+
+---
+
+## ðŸŽ¯ Key Features Documented
+
+### âœ… Core Functionality
+- [x] Role-Based Access Control (Admin, Doctor, Nurse, Patient)
+- [x] Secure Authentication (OAuth 2.0, JWT)
+- [x] Doctor Management (CRUD)
+- [x] Patient Management (CRUD)
+- [x] Appointment Scheduling
+- [x] Medical Records Management
+- [x] Doctor-Patient Relationships
+
+### âœ… Advanced Features
+- [x] Conflict detection for appointments
+- [x] Soft delete with audit trail
+- [x] Search by multiple criteria
+- [x] Prevent deletion of assigned doctors
+- [x] Token refresh mechanism
+- [x] Password hashing (BCrypt)
+- [x] Input validation
+- [x] Exception handling
+
+### âœ… Technical Implementation
+- [x] Layered architecture
+- [x] SOLID principles
+- [x] Repository pattern
+- [x] Unit of Work pattern
+- [x] Dependency Injection
+- [x] AutoMapper
+- [x] FluentValidation
+- [x] Entity Framework Core
+- [x] Swagger/OpenAPI
+
+---
+
+## ðŸš€ Quick Start Guide
+
+### For Project Managers
+1. Review **01-Project-Plan.md** for timeline and milestones
+2. Track deliverables and sprint goals
+3. Monitor risk management section
+
+### For Architects
+1. Study **02-System-Architecture.md** for design decisions
+2. Review **03-Database-Schema-ER-Diagram.md** for data model
+3. Validate patterns and principles
+
+### For Backend Developers
+1. Reference **02-System-Architecture.md** for layered structure
+2. Use **05-API-Documentation.md** for endpoint specifications
+3. Follow **04-Sequence-Diagrams.md** for implementation flows
+4. Check **03-Database-Schema-ER-Diagram.md** for database structure
+
+### For Frontend Developers
+1. Use **05-API-Documentation.md** as primary reference
+2. Review **04-Sequence-Diagrams.md** for user flows
+3. Check authentication flow for JWT handling
+
+### For QA/Testers
+1. Use **04-Sequence-Diagrams.md** for test scenarios
+2. Reference **05-API-Documentation.md** for API testing
+3. Validate business rules from documentation
+
+### For Database Administrators
+1. Implement schema from **03-Database-Schema-ER-Diagram.md**
+2. Create indexes as specified
+3. Set up constraints and relationships
+
+---
+
+## ðŸ“Š Architecture Diagrams (ASCII)
+
+### High-Level System Architecture
+```
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  Angular SPA   â”‚  (Port 4200)
+â”‚   (Client)     â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+        â”‚ HTTPS/REST
+        â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  .NET Core API â”‚  (Port 5000)
+â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”‚
+â”‚  â”‚Controllersâ”‚  â”‚
+â”‚  â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤  â”‚
+â”‚  â”‚ Services  â”‚  â”‚
+â”‚  â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤  â”‚
+â”‚  â”‚  Domain   â”‚  â”‚
+â”‚  â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤  â”‚
+â”‚  â”‚Repository â”‚  â”‚
+â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+        â”‚ EF Core
+        â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  SQL Server    â”‚
+â”‚   Database     â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+```
+
+### Core Entities Relationship
+```
+Users 1:1 Doctors â”€â”€â”€M:Nâ”€â”€â”€ Patients
+                â”‚             â”‚
+                â”‚             â”‚
+                â””â”€â”€â”€ Appointments
+                â”‚             â”‚
+                â””â”€â”€â”€ MedicalRecords
+```
+
+---
+
+## ðŸ” Security Features
+
+- **Authentication:** JWT with refresh tokens
+- **Authorization:** Role-based access control
+- **Password:** BCrypt hashing with salt
+- **Data:** Soft delete for sensitive records
+- **Audit:** CreatedBy, ModifiedBy tracking
+- **Communication:** HTTPS only
+- **Validation:** Input sanitization
+- **SQL Injection:** Parameterized queries (EF Core)
+
+---
+
+## ðŸ§ª Testing Coverage
+
+### Unit Tests
+- Service layer business logic
+- Repository pattern
+- Validation rules
+- Authentication/Authorization
+
+### Integration Tests
+- API endpoints
+- Database transactions
+- End-to-end flows
+
+### Coverage Target
+- **Minimum:** 80% code coverage
+- **Focus:** Critical business logic
+
+---
+
+## ðŸ“ˆ Performance Considerations
+
+- **Database Indexing:** Strategic indexes on frequently queried columns
+- **Caching:** Memory cache for reference data (doctors, specializations)
+- **Pagination:** All list endpoints support paging
+- **Async/Await:** Non-blocking operations throughout
+- **Query Optimization:** Eager loading with Include()
+
+---
+
+## ðŸ› ï¸ Technology Stack
+
+### Backend
+```
+.NET Core 8.0
+â”œâ”€â”€ ASP.NET Core Web API
+â”œâ”€â”€ Entity Framework Core 8.0
+â”œâ”€â”€ Identity & JWT
+â”œâ”€â”€ AutoMapper
+â”œâ”€â”€ FluentValidation
+â”œâ”€â”€ Serilog (Logging)
+â”œâ”€â”€ Swashbuckle (Swagger)
+â””â”€â”€ xUnit + Moq (Testing)
+```
+
+### Frontend
+```
+Angular 18
+â”œâ”€â”€ TypeScript 5.0+
+â”œâ”€â”€ Angular Material
+â”œâ”€â”€ RxJS
+â”œâ”€â”€ Standalone Components
+â”œâ”€â”€ Signals
+â””â”€â”€ Jasmine + Karma (Testing)
+```
+
+### Database
+```
+SQL Server 2019+
+â”œâ”€â”€ Normalized schema (3NF)
+â”œâ”€â”€ Foreign key constraints
+â”œâ”€â”€ Indexes
+â””â”€â”€ Audit trails
+```
+
+---
+
+## ðŸ“¦ Deliverables Checklist
+
+### Documentation âœ…
+- [x] Project Plan
+- [x] System Architecture
+- [x] Database Schema & ER Diagrams
+- [x] Sequence Diagrams
+- [x] API Documentation (Swagger)
+- [x] Class Diagrams (in Architecture doc)
+- [x] Flow Diagrams (in Sequence doc)
+
+### Implementation ðŸš§
+- [ ] Backend API (In Progress)
+- [ ] Frontend Angular App (In Progress)
+- [ ] Database Setup (In Progress)
+- [ ] Unit Tests
+- [ ] Integration Tests
+- [ ] Deployment Scripts
+
+### Reports ðŸ“‹
+- [ ] Test Case Documentation
+- [ ] Code Coverage Report
+- [ ] Performance Test Results
+- [ ] Security Audit Report
+
+---
+
+## ðŸ”„ Version Control
+
+**GitHub Repository:** [Your Repo URL]
+
+### Branching Strategy
+- `main` - Production-ready code
+- `develop` - Integration branch
+- `feature/*` - Feature branches
+- `hotfix/*` - Emergency fixes
+
+### Commit Convention
+```
+<type>(<scope>): <subject>
+
+Examples:
+feat(auth): add JWT refresh token
+fix(appointments): resolve conflict detection
+docs(api): update swagger documentation
+```
+
+---
+
+## ðŸ“ž Support & Contact
+
+### For Technical Questions
+- Review relevant documentation section
+- Check sequence diagrams for flow understanding
+- Reference API documentation for endpoints
+
+### For Project Updates
+- Check Project Plan for current sprint
+- Review milestone completion status
+
+---
+
+## ðŸ“… Document Maintenance
+
+**Last Updated:** February 4, 2026  
+**Version:** 1.0  
+**Status:** Complete  
+
+### Update Schedule
+- Project Plan: Weekly during active development
+- API Documentation: After each sprint
+- Architecture: On major design changes
+- Database Schema: On schema modifications
+
+---
+
+## ðŸŽ“ Learning Resources
+
+### For New Team Members
+1. Start with **Project Plan** for overview
+2. Study **System Architecture** for technical understanding
+3. Review **Sequence Diagrams** for operation flows
+4. Reference **API Documentation** for implementation
+
+### Code Examples
+- Authentication: See Sequence Diagrams section
+- CRUD Operations: See API Documentation
+- Database Queries: See Database Schema
+- Design Patterns: See System Architecture
+
+---
+
+## âœ¨ Best Practices Implemented
+
+- âœ… SOLID principles throughout
+- âœ… Clean code standards
+- âœ… RESTful API design
+- âœ… Comprehensive error handling
+- âœ… Input validation
+- âœ… Security best practices
+- âœ… Performance optimization
+- âœ… Detailed logging
+- âœ… Documentation comments
+- âœ… Unit test coverage
+
+---
+
+## ðŸŽ¯ Next Steps
+
+1. **Review Documentation** with team and stakeholders
+2. **Get Approval** on architecture and design
+3. **Set Up Environment** (SQL Server, VS Code, etc.)
+4. **Initialize Repository** with folder structure
+5. **Begin Implementation** following Sprint 1 plan
+6. **Maintain Documentation** as project evolves
+
+---
+
+**Ready to Share with Manager!** ðŸ“¢
+
+All documents are complete and ready for:
+- Project approval meetings
+- Technical review sessions
+- Development kickoff
+- Stakeholder presentations
+
+---
+
+*This documentation package provides everything needed to understand, implement, and maintain the Hospital Management System.*
+
+</pre>
+</body>
+</html>

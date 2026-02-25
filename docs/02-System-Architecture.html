@@ -1,0 +1,583 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>02-System-Architecture</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #bdc3c7;
+            padding-bottom: 8px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 25px;
+        }
+        pre, code {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+        }
+        code {
+            padding: 2px 6px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+<pre>
+# Hospital Management System - System Architecture
+
+## Table of Contents
+1. [Architecture Overview](#architecture-overview)
+2. [System Architecture Diagram](#system-architecture-diagram)
+3. [Layered Architecture](#layered-architecture)
+4. [Component Diagrams](#component-diagrams)
+5. [Technology Stack](#technology-stack)
+6. [Design Patterns](#design-patterns)
+7. [Security Architecture](#security-architecture)
+
+---
+
+## Architecture Overview
+
+The Hospital Management System follows a **Layered Architecture** with clear separation of concerns, implementing SOLID principles and industry-standard design patterns.
+
+### Architectural Principles
+- **Separation of Concerns**: Each layer has distinct responsibilities
+- **Dependency Inversion**: High-level modules don't depend on low-level modules
+- **Loose Coupling**: Minimal dependencies between components
+- **High Cohesion**: Related functionality grouped together
+- **Testability**: Easy to unit test and mock dependencies
+
+---
+
+## System Architecture Diagram
+
+```
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                         CLIENT TIER                             â”‚
+â”‚                                                                 â”‚
+â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”      â”‚
+â”‚  â”‚           Angular SPA (Port 4200)                    â”‚      â”‚
+â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”     â”‚      â”‚
+â”‚  â”‚  â”‚  Auth      â”‚  â”‚  Doctors   â”‚  â”‚  Patients  â”‚     â”‚      â”‚
+â”‚  â”‚  â”‚  Module    â”‚  â”‚  Module    â”‚  â”‚  Module    â”‚     â”‚      â”‚
+â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜     â”‚      â”‚
+â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”     â”‚      â”‚
+â”‚  â”‚  â”‚Appointmentsâ”‚  â”‚  Records   â”‚  â”‚  Shared    â”‚     â”‚      â”‚
+â”‚  â”‚  â”‚  Module    â”‚  â”‚  Module    â”‚  â”‚ Components â”‚     â”‚      â”‚
+â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜     â”‚      â”‚
+â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜      â”‚
+â”‚                            â”‚                                    â”‚
+â”‚                            â”‚ HTTPS / REST API                   â”‚
+â”‚                            â–¼                                    â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                      APPLICATION TIER                           â”‚
+â”‚                                                                 â”‚
+â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”      â”‚
+â”‚  â”‚         ASP.NET Core Web API (Port 5000)             â”‚      â”‚
+â”‚  â”‚                                                       â”‚      â”‚
+â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”‚      â”‚
+â”‚  â”‚  â”‚         Presentation Layer (API)             â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”     â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚  Auth    â”‚ â”‚ Doctors  â”‚ â”‚ Patients â”‚     â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚Controllerâ”‚ â”‚Controllerâ”‚ â”‚Controllerâ”‚     â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜     â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”                  â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚Appoint-  â”‚ â”‚ Records  â”‚                  â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚ments     â”‚ â”‚Controllerâ”‚                  â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚Controllerâ”‚ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                  â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                               â”‚   â”‚      â”‚
+â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â”‚      â”‚
+â”‚  â”‚                       â”‚                             â”‚      â”‚
+â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”‚      â”‚
+â”‚  â”‚  â”‚      Application Layer (Services)            â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”     â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚  Auth    â”‚ â”‚ Doctor   â”‚ â”‚ Patient  â”‚     â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚ Service  â”‚ â”‚ Service  â”‚ â”‚ Service  â”‚     â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜     â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”                  â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚Appoint-  â”‚ â”‚ Record   â”‚                  â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚ment      â”‚ â”‚ Service  â”‚                  â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚Service   â”‚ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                  â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                               â”‚   â”‚      â”‚
+â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â”‚      â”‚
+â”‚  â”‚                       â”‚                             â”‚      â”‚
+â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”‚      â”‚
+â”‚  â”‚  â”‚         Domain Layer (Entities)              â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”        â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚Doctorâ”‚ â”‚Patientâ”‚ â”‚Appt. â”‚ â”‚Recordâ”‚        â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”˜        â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”                 â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚Doctorâ”‚ â”‚Specialâ”‚ â”‚ User â”‚                 â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚Patientâ”‚ â”‚ izationâ”‚ â”‚      â”‚                â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”˜                 â”‚   â”‚      â”‚
+â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â”‚      â”‚
+â”‚  â”‚                       â”‚                             â”‚      â”‚
+â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”‚      â”‚
+â”‚  â”‚  â”‚    Infrastructure Layer (Data Access)        â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”        â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚   DbContext (EF Core)            â”‚        â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜        â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”     â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚ Doctor   â”‚ â”‚ Patient  â”‚ â”‚Appoint-  â”‚     â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚Repositoryâ”‚ â”‚Repositoryâ”‚ â”‚ment Repo â”‚     â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜     â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”        â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â”‚    Unit of Work Pattern          â”‚        â”‚   â”‚      â”‚
+â”‚  â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜        â”‚   â”‚      â”‚
+â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â”‚      â”‚
+â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜      â”‚
+â”‚                            â”‚                                    â”‚
+â”‚                            â”‚ SQL Connection                     â”‚
+â”‚                            â–¼                                    â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                         DATA TIER                               â”‚
+â”‚                                                                 â”‚
+â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”      â”‚
+â”‚  â”‚            SQL Server Database                       â”‚      â”‚
+â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”             â”‚      â”‚
+â”‚  â”‚  â”‚ Doctors  â”‚ â”‚ Patients â”‚ â”‚  Users   â”‚             â”‚      â”‚
+â”‚  â”‚  â”‚  Table   â”‚ â”‚  Table   â”‚ â”‚  Table   â”‚             â”‚      â”‚
+â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜             â”‚      â”‚
+â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”             â”‚      â”‚
+â”‚  â”‚  â”‚Appoint-  â”‚ â”‚ Records  â”‚ â”‚ Doctor   â”‚             â”‚      â”‚
+â”‚  â”‚  â”‚ments     â”‚ â”‚  Table   â”‚ â”‚ Patient  â”‚             â”‚      â”‚
+â”‚  â”‚  â”‚ Table    â”‚ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚  Table   â”‚             â”‚      â”‚
+â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜              â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜             â”‚      â”‚
+â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜      â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                    CROSS-CUTTING CONCERNS                       â”‚
+â”‚                                                                 â”‚
+â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”          â”‚
+â”‚  â”‚ Logging  â”‚ â”‚  Caching â”‚ â”‚Exception â”‚ â”‚   Auth   â”‚          â”‚
+â”‚  â”‚(Serilog) â”‚ â”‚ (Memory) â”‚ â”‚ Handling â”‚ â”‚(JWT/OAuthâ”‚          â”‚
+â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜          â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+```
+
+---
+
+## Layered Architecture
+
+### 1. Presentation Layer (Hospital.Api)
+**Responsibility**: Handle HTTP requests and responses
+
+**Components**:
+- Controllers (AuthController, DoctorsController, PatientsController, AppointmentsController)
+- DTOs (Data Transfer Objects)
+- Request/Response models
+- Middleware (Exception handling, authentication)
+
+**Key Features**:
+- RESTful API endpoints
+- Input validation
+- Response formatting
+- API versioning
+- Swagger documentation
+
+### 2. Application Layer (Hospital.Application)
+**Responsibility**: Business logic and orchestration
+
+**Components**:
+- Services (AuthService, DoctorService, PatientService, AppointmentService)
+- DTOs and mapping profiles
+- Validation logic (FluentValidation)
+- Business rules
+
+**Key Features**:
+- Use case implementation
+- Data transformation
+- Business rule enforcement
+- Transaction coordination
+
+### 3. Domain Layer (Hospital.Domain)
+**Responsibility**: Core business entities and domain logic
+
+**Components**:
+- Entities (Doctor, Patient, Appointment, MedicalRecord, User)
+- Domain models
+- Entity relationships
+- Business constraints
+
+**Key Features**:
+- Pure domain models
+- No external dependencies
+- Business invariants
+- Domain events (optional)
+
+### 4. Infrastructure Layer (Hospital.Infrastructure)
+**Responsibility**: Data access and external services
+
+**Components**:
+- DbContext (Entity Framework Core)
+- Repositories
+- Unit of Work
+- Migrations
+- Database configurations
+
+**Key Features**:
+- Data persistence
+- Query optimization
+- Transaction management
+- Database seeding
+
+---
+
+## Component Diagrams
+
+### Authentication Flow
+```
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”          â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”          â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ Angular â”‚          â”‚   API    â”‚          â”‚  Database  â”‚
+â”‚  Client â”‚          â”‚          â”‚          â”‚            â”‚
+â””â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”˜          â””â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”˜          â””â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”˜
+     â”‚                    â”‚                       â”‚
+     â”‚ POST /auth/login   â”‚                       â”‚
+     â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€>â”‚                       â”‚
+     â”‚  (username/pwd)    â”‚                       â”‚
+     â”‚                    â”‚ Validate credentials  â”‚
+     â”‚                    â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€>â”‚
+     â”‚                    â”‚                       â”‚
+     â”‚                    â”‚<â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+     â”‚                    â”‚   User found          â”‚
+     â”‚                    â”‚                       â”‚
+     â”‚                    â”‚ Generate JWT token    â”‚
+     â”‚                    â”‚                       â”‚
+     â”‚<â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤                       â”‚
+     â”‚  { token, refresh, â”‚                       â”‚
+     â”‚    role, expires } â”‚                       â”‚
+     â”‚                    â”‚                       â”‚
+     â”‚ GET /doctors       â”‚                       â”‚
+     â”‚ Header: Bearer     â”‚                       â”‚
+     â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€>â”‚                       â”‚
+     â”‚                    â”‚ Verify JWT            â”‚
+     â”‚                    â”‚                       â”‚
+     â”‚                    â”‚ Query doctors         â”‚
+     â”‚                    â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€>â”‚
+     â”‚                    â”‚                       â”‚
+     â”‚                    â”‚<â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+     â”‚<â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤                       â”‚
+     â”‚  Doctors list      â”‚                       â”‚
+```
+
+### Appointment Booking Flow
+```
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”     â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”     â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”     â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ Patient â”‚     â”‚   API    â”‚     â”‚ Appt       â”‚     â”‚ Database â”‚
+â”‚ Client  â”‚     â”‚Controllerâ”‚     â”‚ Service    â”‚     â”‚          â”‚
+â””â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”˜     â””â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”˜     â””â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”˜     â””â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”˜
+     â”‚               â”‚                  â”‚                  â”‚
+     â”‚ POST /appts   â”‚                  â”‚                  â”‚
+     â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€>â”‚                  â”‚                  â”‚
+     â”‚  {doctorId,   â”‚                  â”‚                  â”‚
+     â”‚   patientId,  â”‚                  â”‚                  â”‚
+     â”‚   startTime}  â”‚                  â”‚                  â”‚
+     â”‚               â”‚ CreateAppt()     â”‚                  â”‚
+     â”‚               â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€>â”‚                  â”‚
+     â”‚               â”‚                  â”‚ Check conflicts  â”‚
+     â”‚               â”‚                  â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€>â”‚
+     â”‚               â”‚                  â”‚                  â”‚
+     â”‚               â”‚                  â”‚<â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+     â”‚               â”‚                  â”‚ Existing appts   â”‚
+     â”‚               â”‚                  â”‚                  â”‚
+     â”‚               â”‚                  â”‚ Validate time    â”‚
+     â”‚               â”‚                  â”‚ No overlap?      â”‚
+     â”‚               â”‚                  â”‚                  â”‚
+     â”‚               â”‚                  â”‚ Save appointment â”‚
+     â”‚               â”‚                  â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€>â”‚
+     â”‚               â”‚                  â”‚                  â”‚
+     â”‚               â”‚<â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤                  â”‚
+     â”‚               â”‚  Appointment     â”‚                  â”‚
+     â”‚<â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤  Created         â”‚                  â”‚
+     â”‚  201 Created  â”‚                  â”‚                  â”‚
+```
+
+---
+
+## Technology Stack
+
+### Backend
+```
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚              .NET Core 8.0                   â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚  â€¢ ASP.NET Core Web API                      â”‚
+â”‚  â€¢ Entity Framework Core 8.0                 â”‚
+â”‚  â€¢ Identity & JWT Authentication             â”‚
+â”‚  â€¢ FluentValidation                          â”‚
+â”‚  â€¢ AutoMapper                                â”‚
+â”‚  â€¢ Serilog (Logging)                         â”‚
+â”‚  â€¢ Swashbuckle (Swagger)                     â”‚
+â”‚  â€¢ xUnit (Testing)                           â”‚
+â”‚  â€¢ Moq (Mocking)                             â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+```
+
+### Frontend
+```
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚           Angular 18+                        â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚  â€¢ TypeScript 5.0+                           â”‚
+â”‚  â€¢ Angular Material                          â”‚
+â”‚  â€¢ RxJS                                      â”‚
+â”‚  â€¢ Standalone Components                     â”‚
+â”‚  â€¢ Signals                                   â”‚
+â”‚  â€¢ HttpClient                                â”‚
+â”‚  â€¢ Angular Router                            â”‚
+â”‚  â€¢ Reactive Forms                            â”‚
+â”‚  â€¢ Jasmine & Karma (Testing)                 â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+```
+
+### Database
+```
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚         SQL Server 2019+                     â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚  â€¢ Tables with proper indexing               â”‚
+â”‚  â€¢ Foreign key constraints                   â”‚
+â”‚  â€¢ Stored procedures (if needed)             â”‚
+â”‚  â€¢ Views for complex queries                 â”‚
+â”‚  â€¢ Audit triggers                            â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+```
+
+---
+
+## Design Patterns
+
+### 1. Repository Pattern
+```csharp
+public interface IRepository<T> where T : class
+{
+    Task<T?> GetByIdAsync(int id);
+    Task<IEnumerable<T>> GetAllAsync();
+    Task<T> AddAsync(T entity);
+    Task UpdateAsync(T entity);
+    Task DeleteAsync(int id);
+}
+
+public class GenericRepository<T> : IRepository<T> where T : class
+{
+    private readonly ApplicationDbContext _context;
+    private readonly DbSet<T> _dbSet;
+    
+    // Implementation...
+}
+```
+
+### 2. Unit of Work Pattern
+```csharp
+public interface IUnitOfWork : IDisposable
+{
+    IDoctorRepository Doctors { get; }
+    IPatientRepository Patients { get; }
+    IAppointmentRepository Appointments { get; }
+    
+    Task<int> SaveChangesAsync();
+    Task BeginTransactionAsync();
+    Task CommitTransactionAsync();
+    Task RollbackTransactionAsync();
+}
+```
+
+### 3. Dependency Injection
+```csharp
+// Startup registration
+services.AddScoped<IUnitOfWork, UnitOfWork>();
+services.AddScoped<IDoctorService, DoctorService>();
+services.AddScoped<IPatientService, PatientService>();
+```
+
+### 4. Factory Pattern (Optional)
+```csharp
+public interface IServiceFactory
+{
+    IAuthService CreateAuthService();
+    IDoctorService CreateDoctorService();
+}
+```
+
+### 5. Strategy Pattern (Caching)
+```csharp
+public interface ICachingStrategy
+{
+    Task<T?> GetAsync<T>(string key);
+    Task SetAsync<T>(string key, T value, TimeSpan? expiration);
+}
+```
+
+---
+
+## Security Architecture
+
+### Authentication Flow
+```
+1. User Login
+   â”œâ”€> Validate Credentials
+   â”œâ”€> Generate JWT Access Token (15 min)
+   â”œâ”€> Generate Refresh Token (7 days)
+   â””â”€> Return tokens to client
+
+2. API Request
+   â”œâ”€> Client sends JWT in Authorization header
+   â”œâ”€> JWT Middleware validates token
+   â”œâ”€> Extract claims (userId, role)
+   â””â”€> Allow/Deny access
+
+3. Token Refresh
+   â”œâ”€> Access token expired
+   â”œâ”€> Client sends refresh token
+   â”œâ”€> Validate refresh token
+   â””â”€> Issue new access token
+```
+
+### Authorization Layers
+```
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚      Role-Based Access Control         â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚  Admin    â†’ Full access to all         â”‚
+â”‚  Doctor   â†’ Patients, Appointments     â”‚
+â”‚  Nurse    â†’ Patients, Appointments     â”‚
+â”‚  Patient  â†’ Own records only           â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+```
+
+### Security Implementation
+- **JWT Tokens**: Stateless authentication
+- **HTTPS**: All communications encrypted
+- **Password Hashing**: BCrypt with salt
+- **SQL Injection**: Parameterized queries (EF Core)
+- **XSS Prevention**: Input sanitization
+- **CSRF Protection**: SameSite cookies
+- **CORS**: Configured for Angular origin
+
+---
+
+## Scalability Considerations
+
+### Horizontal Scaling
+- Stateless API (can run multiple instances)
+- Load balancer distribution
+- Database connection pooling
+
+### Caching Strategy
+```
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚         Caching Layers              â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚  1. Memory Cache (frequent data)    â”‚
+â”‚     - Doctor list                   â”‚
+â”‚     - Specializations               â”‚
+â”‚                                     â”‚
+â”‚  2. Distributed Cache (optional)    â”‚
+â”‚     - Redis for multi-instance      â”‚
+â”‚                                     â”‚
+â”‚  3. Database Query Cache            â”‚
+â”‚     - EF Core query caching         â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+```
+
+### Performance Optimization
+- Database indexing on frequently queried columns
+- Lazy loading disabled (prevent N+1 queries)
+- Pagination for large datasets
+- Async/await throughout
+- Query optimization with Include()
+
+---
+
+## Monitoring & Logging
+
+### Logging Architecture
+```
+Application Events
+       â†“
+   Serilog
+       â†“
+â”Œâ”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”
+â”‚             â”‚
+File          Console
+Logs          (Dev)
+```
+
+### Log Levels
+- **Trace**: Detailed flow
+- **Debug**: Development info
+- **Information**: General events
+- **Warning**: Potential issues
+- **Error**: Exceptions
+- **Critical**: System failures
+
+---
+
+**Document Version:** 1.0  
+**Last Updated:** February 4, 2026  
+**Status:** Final
+
+</pre>
+</body>
+</html>

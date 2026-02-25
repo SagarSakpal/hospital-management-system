@@ -1,0 +1,1065 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>05-API-Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #bdc3c7;
+            padding-bottom: 8px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 25px;
+        }
+        pre, code {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+        }
+        code {
+            padding: 2px 6px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+<pre>
+# Hospital Management System - API Documentation
+
+## Table of Contents
+1. [API Overview](#api-overview)
+2. [Authentication Endpoints](#authentication-endpoints)
+3. [Doctor Endpoints](#doctor-endpoints)
+4. [Patient Endpoints](#patient-endpoints)
+5. [Appointment Endpoints](#appointment-endpoints)
+6. [Medical Records Endpoints](#medical-records-endpoints)
+7. [Doctor-Patient Endpoints](#doctor-patient-endpoints)
+8. [Error Responses](#error-responses)
+
+---
+
+## API Overview
+
+**Base URL:** `https://localhost:5001/api` (Development)  
+**Protocol:** HTTPS  
+**Content-Type:** `application/json`  
+**Authentication:** JWT Bearer Token  
+**API Version:** v1
+
+### Swagger/OpenAPI Documentation
+Access interactive API documentation at: `https://localhost:5001/swagger`
+
+---
+
+## Authentication Endpoints
+
+### 1. Login
+**POST** `/api/auth/login`
+
+Authenticate user and receive JWT access token and refresh token.
+
+**Request Body:**
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "a1b2c3d4e5f6...",
+  "role": "Doctor",
+  "expiresIn": 900
+}
+```
+
+**Errors:**
+- `400 Bad Request` - Invalid input
+- `401 Unauthorized` - Invalid credentials
+
+---
+
+### 2. Refresh Token
+**POST** `/api/auth/refresh`
+
+Get a new access token using refresh token.
+
+**Request Body:**
+```json
+{
+  "refreshToken": "a1b2c3d4e5f6..."
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "g7h8i9j0k1l2...",
+  "expiresIn": 900
+}
+```
+
+---
+
+### 3. Logout
+**POST** `/api/auth/logout`
+
+Invalidate refresh token and logout user.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Response:** `204 No Content`
+
+---
+
+## Doctor Endpoints
+
+### 1. Get All Doctors
+**GET** `/api/doctors`
+
+Retrieve list of all doctors.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `specializationId` (optional): Filter by specialization
+- `search` (optional): Search by name
+- `pageNumber` (optional): Page number (default: 1)
+- `pageSize` (optional): Items per page (default: 10)
+
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": 1,
+    "name": "Dr. John Smith",
+    "specializationId": 1,
+    "specializationName": "Cardiology",
+    "email": "john.smith@hospital.com",
+    "phone": "555-0101",
+    "licenseNumber": "MD12345"
+  }
+]
+```
+
+**Authorization:** Any authenticated user
+
+---
+
+### 2. Get Doctor by ID
+**GET** `/api/doctors/{id}`
+
+Retrieve specific doctor details.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Response:** `200 OK`
+```json
+{
+  "id": 1,
+  "name": "Dr. John Smith",
+  "specializationId": 1,
+  "specializationName": "Cardiology",
+  "email": "john.smith@hospital.com",
+  "phone": "555-0101",
+  "licenseNumber": "MD12345",
+  "createdAt": "2026-01-15T10:30:00Z"
+}
+```
+
+**Errors:**
+- `404 Not Found` - Doctor not found
+
+---
+
+### 3. Create Doctor
+**POST** `/api/doctors`
+
+Create a new doctor profile.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "name": "Dr. Sarah Johnson",
+  "specializationId": 2,
+  "email": "sarah.johnson@hospital.com",
+  "phone": "555-0102",
+  "licenseNumber": "MD12346"
+}
+```
+
+**Response:** `201 Created`
+```json
+{
+  "id": 2,
+  "name": "Dr. Sarah Johnson",
+  "specializationId": 2,
+  "email": "sarah.johnson@hospital.com",
+  "phone": "555-0102",
+  "licenseNumber": "MD12346",
+  "createdAt": "2026-02-04T14:20:00Z"
+}
+```
+
+**Authorization:** Admin only
+
+**Errors:**
+- `400 Bad Request` - Validation errors
+- `409 Conflict` - Email or license number already exists
+- `403 Forbidden` - Insufficient permissions
+
+---
+
+### 4. Update Doctor
+**PUT** `/api/doctors/{id}`
+
+Update existing doctor information.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "name": "Dr. Sarah Johnson",
+  "specializationId": 2,
+  "email": "sarah.johnson@hospital.com",
+  "phone": "555-0102"
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "id": 2,
+  "name": "Dr. Sarah Johnson",
+  "specializationId": 2,
+  "email": "sarah.johnson@hospital.com",
+  "phone": "555-0102",
+  "licenseNumber": "MD12346",
+  "updatedAt": "2026-02-04T15:45:00Z"
+}
+```
+
+**Authorization:** Admin only
+
+---
+
+### 5. Delete Doctor
+**DELETE** `/api/doctors/{id}`
+
+Soft delete a doctor (marks as deleted, preserves data).
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Response:** `204 No Content`
+
+**Authorization:** Admin only
+
+**Business Rule:** Cannot delete doctor with active patient assignments
+
+**Errors:**
+- `400 Bad Request` - Doctor has active patients
+- `404 Not Found` - Doctor not found
+
+---
+
+## Patient Endpoints
+
+### 1. Get All Patients
+**GET** `/api/patients`
+
+Retrieve list of patients.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `search` (optional): Search by name
+- `condition` (optional): Filter by medical condition
+- `pageNumber` (optional): Page number
+- `pageSize` (optional): Items per page
+
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "dateOfBirth": "1985-03-15",
+    "age": 41,
+    "gender": "Male",
+    "email": "john.doe@example.com",
+    "phone": "555-1001",
+    "bloodGroup": "O+",
+    "condition": "Hypertension"
+  }
+]
+```
+
+**Authorization:** Admin, Doctor, Nurse
+
+---
+
+### 2. Get Patient by ID
+**GET** `/api/patients/{id}`
+
+Retrieve specific patient details.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Response:** `200 OK`
+```json
+{
+  "id": 1,
+  "name": "John Doe",
+  "dateOfBirth": "1985-03-15",
+  "age": 41,
+  "gender": "Male",
+  "email": "john.doe@example.com",
+  "phone": "555-1001",
+  "address": "123 Main St, City, State 12345",
+  "bloodGroup": "O+",
+  "condition": "Hypertension",
+  "createdAt": "2025-12-01T08:00:00Z"
+}
+```
+
+**Authorization:** Admin, Doctor, Nurse, or Patient (own record only)
+
+---
+
+### 3. Create Patient
+**POST** `/api/patients`
+
+Register a new patient.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "name": "Jane Wilson",
+  "dateOfBirth": "1990-07-22",
+  "gender": "Female",
+  "email": "jane.wilson@example.com",
+  "phone": "555-1002",
+  "address": "456 Oak Ave, City, State 12345",
+  "bloodGroup": "A+",
+  "condition": "Diabetes"
+}
+```
+
+**Validation Rules:**
+- `name`: Required, max 200 characters
+- `dateOfBirth`: Required, must be in the past
+- `gender`: Required, must be 'Male', 'Female', or 'Other'
+- `email`: Optional, must be valid email format, unique
+- `phone`: Required, max 20 characters
+- `bloodGroup`: Optional, valid blood group (A+, A-, B+, B-, O+, O-, AB+, AB-)
+
+**Response:** `201 Created`
+```json
+{
+  "id": 2,
+  "name": "Jane Wilson",
+  "dateOfBirth": "1990-07-22",
+  "age": 36,
+  "gender": "Female",
+  "email": "jane.wilson@example.com",
+  "phone": "555-1002",
+  "bloodGroup": "A+",
+  "condition": "Diabetes",
+  "createdAt": "2026-02-04T16:00:00Z"
+}
+```
+
+**Authorization:** Admin, Nurse
+
+---
+
+### 4. Update Patient
+**PUT** `/api/patients/{id}`
+
+Update patient information.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "name": "Jane Wilson",
+  "dateOfBirth": "1990-07-22",
+  "gender": "Female",
+  "email": "jane.wilson@example.com",
+  "phone": "555-1002",
+  "address": "789 New St, City, State 12345",
+  "bloodGroup": "A+",
+  "condition": "Diabetes Type 2"
+}
+```
+
+**Response:** `200 OK`
+
+**Authorization:** Admin, Nurse, or Patient (own record only)
+
+---
+
+### 5. Delete Patient
+**DELETE** `/api/patients/{id}`
+
+Soft delete a patient.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Response:** `204 No Content`
+
+**Authorization:** Admin only
+
+---
+
+## Appointment Endpoints
+
+### 1. Get Appointments
+**GET** `/api/appointments`
+
+Retrieve appointments based on filters.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `doctorId` (optional): Filter by doctor
+- `patientId` (optional): Filter by patient
+- `from`: Start date (YYYY-MM-DD)
+- `to`: End date (YYYY-MM-DD)
+- `status` (optional): Filter by status (Scheduled, Completed, Cancelled)
+
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": 1,
+    "doctorId": 1,
+    "doctorName": "Dr. John Smith",
+    "patientId": 1,
+    "patientName": "John Doe",
+    "startTime": "2026-02-05T10:00:00Z",
+    "endTime": "2026-02-05T11:00:00Z",
+    "status": "Scheduled",
+    "notes": "Follow-up visit"
+  }
+]
+```
+
+**Authorization:** 
+- Admin/Nurse: Can view all appointments
+- Doctor: Can view own appointments
+- Patient: Can view own appointments
+
+---
+
+### 2. Get Appointment by ID
+**GET** `/api/appointments/{id}`
+
+Retrieve specific appointment details.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Response:** `200 OK`
+```json
+{
+  "id": 1,
+  "doctorId": 1,
+  "doctorName": "Dr. John Smith",
+  "patientId": 1,
+  "patientName": "John Doe",
+  "startTime": "2026-02-05T10:00:00Z",
+  "endTime": "2026-02-05T11:00:00Z",
+  "status": "Scheduled",
+  "notes": "Follow-up visit",
+  "createdAt": "2026-02-04T09:30:00Z"
+}
+```
+
+---
+
+### 3. Create Appointment
+**POST** `/api/appointments`
+
+Book a new appointment.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "doctorId": 1,
+  "patientId": 1,
+  "startTime": "2026-02-05T10:00:00Z",
+  "notes": "Annual checkup"
+}
+```
+
+**Validation:**
+- `startTime` must be in the future
+- Duration is automatically set to 1 hour
+- No overlapping appointments for the same doctor
+
+**Response:** `201 Created`
+```json
+{
+  "id": 2,
+  "doctorId": 1,
+  "patientId": 1,
+  "startTime": "2026-02-05T10:00:00Z",
+  "endTime": "2026-02-05T11:00:00Z",
+  "status": "Scheduled",
+  "notes": "Annual checkup",
+  "createdAt": "2026-02-04T17:00:00Z"
+}
+```
+
+**Errors:**
+- `409 Conflict` - Time slot already booked for this doctor
+
+---
+
+### 4. Update Appointment Status
+**PATCH** `/api/appointments/{id}/status`
+
+Update appointment status (Complete or Cancel).
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "status": "Completed"
+}
+```
+
+**Valid Status Values:**
+- `Completed`
+- `Cancelled`
+
+**Response:** `200 OK`
+```json
+{
+  "id": 1,
+  "status": "Completed",
+  "updatedAt": "2026-02-05T11:05:00Z"
+}
+```
+
+**Authorization:** Admin, Doctor, Nurse
+
+**Business Rule:** Can only update status of 'Scheduled' appointments
+
+---
+
+### 5. Get Doctor's Day Schedule
+**GET** `/api/appointments/doctor/{doctorId}/day/{date}`
+
+Get all appointments for a specific doctor on a specific date.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Parameters:**
+- `doctorId`: Doctor ID
+- `date`: Date in format YYYY-MM-DD
+
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": 1,
+    "patientId": 1,
+    "patientName": "John Doe",
+    "startTime": "2026-02-05T10:00:00Z",
+    "endTime": "2026-02-05T11:00:00Z",
+    "status": "Scheduled",
+    "notes": "Follow-up visit"
+  },
+  {
+    "id": 2,
+    "patientId": 2,
+    "patientName": "Jane Wilson",
+    "startTime": "2026-02-05T14:00:00Z",
+    "endTime": "2026-02-05T15:00:00Z",
+    "status": "Scheduled",
+    "notes": "Initial consultation"
+  }
+]
+```
+
+---
+
+## Medical Records Endpoints
+
+### 1. Get Medical Records
+**GET** `/api/medical-records`
+
+Retrieve medical records.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `patientId` (optional): Filter by patient
+- `doctorId` (optional): Filter by doctor
+- `from` (optional): Start date
+- `to` (optional): End date
+
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": 1,
+    "patientId": 1,
+    "patientName": "John Doe",
+    "doctorId": 1,
+    "doctorName": "Dr. John Smith",
+    "diagnosis": "Hypertension Stage 2",
+    "treatment": "Lifestyle modifications, medication",
+    "prescription": "Lisinopril 10mg once daily",
+    "visitDate": "2026-02-01T10:30:00Z",
+    "followUpDate": "2026-03-01T10:30:00Z",
+    "notes": "Patient advised to monitor BP daily"
+  }
+]
+```
+
+**Authorization:**
+- Admin: View all records
+- Doctor: View own patients' records
+- Patient: View own records only
+
+---
+
+### 2. Get Medical Record by ID
+**GET** `/api/medical-records/{id}`
+
+Retrieve specific medical record.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Response:** `200 OK`
+
+**Authorization:** Admin, assigned Doctor, or Patient (own record)
+
+---
+
+### 3. Create Medical Record
+**POST** `/api/medical-records`
+
+Create a new medical record.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "patientId": 1,
+  "diagnosis": "Hypertension Stage 2",
+  "treatment": "Lifestyle modifications, medication",
+  "prescription": "Lisinopril 10mg once daily",
+  "followUpDate": "2026-03-01T10:30:00Z",
+  "notes": "Patient advised to monitor BP daily"
+}
+```
+
+**Response:** `201 Created`
+```json
+{
+  "id": 2,
+  "patientId": 1,
+  "doctorId": 1,
+  "diagnosis": "Hypertension Stage 2",
+  "treatment": "Lifestyle modifications, medication",
+  "prescription": "Lisinopril 10mg once daily",
+  "visitDate": "2026-02-04T18:00:00Z",
+  "followUpDate": "2026-03-01T10:30:00Z",
+  "notes": "Patient advised to monitor BP daily",
+  "createdBy": 5,
+  "createdAt": "2026-02-04T18:00:00Z"
+}
+```
+
+**Authorization:** Doctor only
+
+**Note:** DoctorId is automatically set from authenticated user
+
+---
+
+### 4. Update Medical Record
+**PUT** `/api/medical-records/{id}`
+
+Update existing medical record.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "diagnosis": "Hypertension Stage 2 - Controlled",
+  "treatment": "Continue current medication",
+  "prescription": "Lisinopril 10mg once daily",
+  "followUpDate": "2026-04-01T10:30:00Z",
+  "notes": "BP well controlled, continue monitoring"
+}
+```
+
+**Response:** `200 OK`
+
+**Authorization:** Admin or Doctor who created the record
+
+**Note:** ModifiedBy is automatically set from authenticated user
+
+---
+
+### 5. Delete Medical Record
+**DELETE** `/api/medical-records/{id}`
+
+Soft delete a medical record (preserves audit trail).
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Response:** `204 No Content`
+
+**Authorization:** Admin only
+
+**Note:** This is a soft delete. Record is marked as deleted but preserved in database.
+
+---
+
+## Doctor-Patient Endpoints
+
+### 1. Assign Patient to Doctor
+**POST** `/api/doctor-patients`
+
+Create doctor-patient relationship.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "doctorId": 1,
+  "patientId": 1,
+  "notes": "Primary care physician"
+}
+```
+
+**Response:** `201 Created`
+```json
+{
+  "id": 1,
+  "doctorId": 1,
+  "doctorName": "Dr. John Smith",
+  "patientId": 1,
+  "patientName": "John Doe",
+  "assignedDate": "2026-02-04T19:00:00Z",
+  "isActive": true,
+  "notes": "Primary care physician"
+}
+```
+
+**Authorization:** Admin, Nurse
+
+**Business Rule:** Cannot assign deleted doctors or patients
+
+---
+
+### 2. Get Doctor's Patients
+**GET** `/api/doctor-patients/doctor/{doctorId}`
+
+Get all patients assigned to a specific doctor.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": 1,
+    "patientId": 1,
+    "patientName": "John Doe",
+    "patientEmail": "john.doe@example.com",
+    "condition": "Hypertension",
+    "assignedDate": "2026-02-04T19:00:00Z",
+    "isActive": true
+  }
+]
+```
+
+---
+
+### 3. Get Patient's Doctors
+**GET** `/api/doctor-patients/patient/{patientId}`
+
+Get all doctors assigned to a specific patient.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": 1,
+    "doctorId": 1,
+    "doctorName": "Dr. John Smith",
+    "specializationName": "Cardiology",
+    "assignedDate": "2026-02-04T19:00:00Z",
+    "isActive": true
+  }
+]
+```
+
+---
+
+### 4. Deactivate Assignment
+**PATCH** `/api/doctor-patients/{id}/deactivate`
+
+Deactivate doctor-patient relationship.
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Response:** `204 No Content`
+
+**Authorization:** Admin, Nurse
+
+---
+
+## Error Responses
+
+### Standard Error Format
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "errors": {
+    "Email": ["The Email field is not a valid email address."],
+    "Name": ["The Name field is required."]
+  },
+  "traceId": "00-abc123..."
+}
+```
+
+### HTTP Status Codes
+
+| Code | Meaning | Description |
+|------|---------|-------------|
+| 200 | OK | Request succeeded |
+| 201 | Created | Resource created successfully |
+| 204 | No Content | Request succeeded, no content to return |
+| 400 | Bad Request | Invalid request data or validation error |
+| 401 | Unauthorized | Missing or invalid authentication token |
+| 403 | Forbidden | Insufficient permissions |
+| 404 | Not Found | Resource not found |
+| 409 | Conflict | Resource conflict (duplicate, time slot taken) |
+| 500 | Internal Server Error | Server error |
+
+### Common Error Examples
+
+**401 Unauthorized:**
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7235#section-3.1",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "Invalid or expired token"
+}
+```
+
+**403 Forbidden:**
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.3",
+  "title": "Forbidden",
+  "status": 403,
+  "detail": "You do not have permission to perform this action"
+}
+```
+
+**404 Not Found:**
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Doctor with id 999 not found"
+}
+```
+
+**409 Conflict:**
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.8",
+  "title": "Conflict",
+  "status": 409,
+  "detail": "Appointment time slot is already booked"
+}
+```
+
+---
+
+## Rate Limiting
+
+- **Rate Limit:** 100 requests per minute per IP
+- **Headers:**
+  - `X-RateLimit-Limit`: Maximum requests allowed
+  - `X-RateLimit-Remaining`: Remaining requests
+  - `X-RateLimit-Reset`: Time when limit resets
+
+---
+
+## Versioning
+
+API versioning through URL: `/api/v1/...`
+
+Future versions will maintain backward compatibility or provide migration guides.
+
+---
+
+**Document Version:** 1.0  
+**Last Updated:** February 4, 2026  
+**Swagger URL:** https://localhost:5001/swagger  
+**Status:** Final
+
+</pre>
+</body>
+</html>

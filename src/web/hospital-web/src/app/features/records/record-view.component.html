@@ -1,0 +1,155 @@
+<div class="page">
+  <div class="page-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">description</mat-icon>
+      <h2>Medical Record Details</h2>
+    </div>
+  </div>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate" class="loading-bar"></mat-progress-bar>
+
+  <div *ngIf="rec" class="record-container">
+    <!-- Basic Information Section -->
+    <div class="info-section">
+      <div class="section-header">
+        <mat-icon>info</mat-icon>
+        <h3>Basic Information</h3>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">
+            <mat-icon>badge</mat-icon>
+            <span>Record ID</span>
+          </div>
+          <div class="info-value">#{{ id }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">
+            <mat-icon>category</mat-icon>
+            <span>Record Type</span>
+          </div>
+          <div class="info-value">{{ rec.recordType }}</div>
+        </div>
+        <div class="info-item status-item">
+          <div class="info-label">
+            <mat-icon>flag</mat-icon>
+            <span>Status</span>
+          </div>
+          <div class="info-value">
+            <span class="status-badge" [ngClass]="{
+              'status-archived': rec.isArchived,
+              'status-deleted': rec.isDeleted,
+              'status-active': !rec.isArchived && !rec.isDeleted
+            }">
+              <mat-icon>{{ rec.isArchived ? 'archive' : (rec.isDeleted ? 'delete' : 'check_circle') }}</mat-icon>
+              {{ rec.isArchived ? 'Archived' : (rec.isDeleted ? 'Deleted' : 'Active') }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patient & Doctor Section -->
+    <div class="info-section">
+      <div class="section-header">
+        <mat-icon>people</mat-icon>
+        <h3>Patient & Doctor Information</h3>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">
+            <mat-icon>person</mat-icon>
+            <span>Patient</span>
+          </div>
+          <div class="info-value">{{ rec.patientName || 'Patient #' + rec.patientId }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">
+            <mat-icon>medical_services</mat-icon>
+            <span>Doctor</span>
+          </div>
+          <div class="info-value">{{ rec.doctorName || 'Doctor #' + rec.doctorId }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Medical Details Section -->
+    <div class="info-section">
+      <div class="section-header">
+        <mat-icon>note</mat-icon>
+        <h3>Medical Details</h3>
+      </div>
+      <div class="description-box">
+        <p>{{ rec.description || 'No description provided' }}</p>
+      </div>
+    </div>
+
+    <!-- Timestamps Section -->
+    <div class="info-section">
+      <div class="section-header">
+        <mat-icon>schedule</mat-icon>
+        <h3>Timeline</h3>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">
+            <mat-icon>add_circle</mat-icon>
+            <span>Created On</span>
+          </div>
+          <div class="info-value">{{ rec.createdOn | date:'medium' }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">
+            <mat-icon>update</mat-icon>
+            <span>Last Updated</span>
+          </div>
+          <div class="info-value">{{ rec.updatedOn ? (rec.updatedOn | date:'medium') : 'Not updated' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attachment Section -->
+    <div class="info-section attachment-section">
+      <div class="section-header">
+        <mat-icon>attach_file</mat-icon>
+        <h3>Attachment</h3>
+      </div>
+      <div class="attachment-container">
+        <ng-container *ngIf="rec.attachmentUrl; else noAtt">
+          <div class="attachment-available">
+            <mat-icon>description</mat-icon>
+            <div class="attachment-info">
+              <span class="attachment-label">File attached</span>
+              <button mat-raised-button color="primary" (click)="openAttachment()" class="view-button">
+                <mat-icon>open_in_new</mat-icon>
+                Open Attachment
+              </button>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #noAtt>
+          <div class="no-attachment">
+            <mat-icon>cloud_off</mat-icon>
+            <span>No attachment available</span>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Actions Section -->
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="edit()" *ngIf="canManage()">
+        <mat-icon>edit</mat-icon>
+        Edit Record
+      </button>
+      <button mat-raised-button (click)="toggleArchive()" *ngIf="canArchive()">
+        <mat-icon>{{ rec.isArchived ? 'unarchive' : 'archive' }}</mat-icon>
+        {{ rec.isArchived ? 'Unarchive' : 'Archive' }}
+      </button>
+      <button mat-raised-button color="warn" (click)="remove()" *ngIf="canManage()">
+        <mat-icon>delete</mat-icon>
+        Delete Record
+      </button>
+    </div>
+  </div>
+</div>

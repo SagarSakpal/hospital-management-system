@@ -1,0 +1,107 @@
+<div class="page">
+  <div class="page-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">{{ id ? 'edit_note' : 'note_add' }}</mat-icon>
+      <h2>{{ id ? 'Edit Medical Record' : 'Create Medical Record' }}</h2>
+    </div>
+  </div>
+
+  <div class="form-container">
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>people</mat-icon>
+          Patient & Doctor Information
+        </h3>
+        <div class="row">
+          <mat-form-field appearance="outline">
+            <mat-label>
+              <mat-icon>person</mat-icon>
+              Patient
+            </mat-label>
+            <mat-select formControlName="patientId" required>
+              <mat-option *ngFor="let p of patients" [value]="p.id">{{ p.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>
+              <mat-icon>medical_services</mat-icon>
+              Doctor
+            </mat-label>
+            <mat-select formControlName="doctorId" required>
+              <mat-option *ngFor="let d of doctors" [value]="d.id">{{ d.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>category</mat-icon>
+          Record Details
+        </h3>
+        <div class="row">
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>
+              <mat-icon>label</mat-icon>
+              Record Type
+            </mat-label>
+            <input matInput formControlName="recordType" required maxlength="100" placeholder="e.g., Consultation, Lab Test, Prescription">
+          </mat-form-field>
+        </div>
+
+        <div class="row">
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>
+              <mat-icon>description</mat-icon>
+              Description
+            </mat-label>
+            <textarea matInput rows="5" formControlName="description" required placeholder="Enter detailed description of the medical record..."></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="form-section attachment-section">
+        <h3 class="section-title">
+          <mat-icon>attach_file</mat-icon>
+          Attachment (Optional)
+        </h3>
+        <div class="file-upload">
+          <input type="file" #fileInput (change)="onFileSelected($event)" id="fileInput" class="file-input" accept="*/*">
+          <label for="fileInput" class="file-label">
+            <mat-icon>cloud_upload</mat-icon>
+            <span>{{ uploading ? 'Uploading...' : (fileToUpload ? fileToUpload.name : 'Choose File') }}</span>
+          </label>
+          <div *ngIf="fileToUpload && !uploading" class="file-selected">
+            <mat-icon>description</mat-icon>
+            <span>Selected: {{ fileToUpload.name }} ({{ (fileToUpload.size / 1024).toFixed(2) }} KB)</span>
+          </div>
+          <div *ngIf="uploading" class="uploading-indicator">
+            <mat-icon>hourglass_empty</mat-icon>
+            <span>Uploading file...</span>
+          </div>
+          <div *ngIf="attachmentUrl && !fileToUpload" class="current-attachment">
+            <mat-icon>check_circle</mat-icon>
+            <span>File attached: </span>
+            <a [href]="attachmentUrl" target="_blank" class="attachment-link">
+              <mat-icon>open_in_new</mat-icon>
+              View Current Attachment
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+          <mat-icon>{{ id ? 'save' : 'add' }}</mat-icon>
+          {{ id ? 'Update Record' : 'Create Record' }}
+        </button>
+        <button mat-stroked-button type="button" routerLink="/records">
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

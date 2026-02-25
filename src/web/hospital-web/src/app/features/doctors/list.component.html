@@ -1,0 +1,111 @@
+<div class="page">
+  <div class="page-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">local_hospital</mat-icon>
+      <h2>Doctors Directory</h2>
+    </div>
+    <div class="actions" *ngIf="canManage()">
+      <button mat-raised-button color="primary" (click)="add()">
+        <mat-icon>add</mat-icon>
+        Add Doctor
+      </button>
+    </div>
+  </div>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate" class="loading-bar"></mat-progress-bar>
+
+  <!-- Search Section -->
+  <div class="search-section" *ngIf="!loading">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>
+        <mat-icon>search</mat-icon>
+        Search Doctors
+      </mat-label>
+      <input matInput [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Search by name, specialization, or contact">
+      <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="clearSearch()" matTooltip="Clear search">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <div class="table-container" *ngIf="!loading">
+    <table mat-table [dataSource]="filteredRows" class="doctors-table mat-elevation-z2">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="header-cell">
+            <mat-icon>person</mat-icon>
+            <span>Name</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let r">
+          <div class="cell-content">
+            <strong>{{ r.name }}</strong>
+          </div>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="specialization">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="header-cell">
+            <mat-icon>medical_services</mat-icon>
+            <span>Specialization</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let r">
+          <span class="badge specialization-badge">ID: {{ r.specializationId }}</span>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="experience">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="header-cell">
+            <mat-icon>workspace_premium</mat-icon>
+            <span>Experience</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let r">
+          <span class="experience-years">{{ r.experienceYears }} years</span>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="contact">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="header-cell">
+            <mat-icon>phone</mat-icon>
+            <span>Contact</span>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let r">
+          <div class="contact-info">
+            <mat-icon class="contact-icon">contact_phone</mat-icon>
+            {{ r.contact }}
+          </div>
+        </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+        <td mat-cell *matCellDef="let r" class="actions-cell">
+          <button mat-icon-button color="primary" (click)="edit(r.id)" *ngIf="canManage()">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="remove(r.id)" *ngIf="canManage()">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+    </table>
+
+    <div class="empty-state" *ngIf="rows.length === 0">
+      <mat-icon>medical_information</mat-icon>
+      <p>No doctors found</p>
+      <button mat-raised-button color="primary" (click)="add()" *ngIf="canManage()">
+        <mat-icon>add</mat-icon>
+        Add First Doctor
+      </button>
+    </div>
+  </div>
+</div>

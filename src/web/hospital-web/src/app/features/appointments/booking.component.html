@@ -1,0 +1,179 @@
+<div class="page">
+  <div class="page-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">event_note</mat-icon>
+      <h2>Book Appointment</h2>
+    </div>
+  </div>
+
+  <div class="form-container">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>person_search</mat-icon>
+          Patient & Doctor Selection
+        </h3>
+        <div class="row">
+          <mat-form-field appearance="outline">
+            <mat-label>
+              <mat-icon>medical_services</mat-icon>
+              Doctor
+            </mat-label>
+            <mat-select formControlName="doctorId" required>
+              <mat-option *ngFor="let d of doctors" [value]="d.id">
+                {{ d.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>
+              <mat-icon>calendar_today</mat-icon>
+              Date
+            </mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="date" [matDatepickerFilter]="dateFilter" required>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker startView="multi-year"></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <!-- Patient selection for Admin/Doctor/Nurse -->
+        <div class="row" *ngIf="role === 'Admin' || role === 'Doctor' || role === 'Nurse'">
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>
+              <mat-icon>person</mat-icon>
+              Patient
+            </mat-label>
+            <mat-select formControlName="patientId" required>
+              <mat-option *ngFor="let p of patients" [value]="p.id">
+                {{ p.name }} ({{ p.condition }})
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Patient selector for patients -->
+        <div class="row" *ngIf="role === 'Patient'">
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>
+              <mat-icon>person</mat-icon>
+              Patient (Temporary)
+            </mat-label>
+            <mat-select formControlName="patientId" required>
+              <mat-option *ngFor="let p of patients" [value]="p.id">
+                {{ p.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>schedule</mat-icon>
+          Available Time Slots
+        </h3>
+        <div class="slot-grid">
+          <button
+            mat-stroked-button
+            type="button"
+            *ngFor="let s of slots()"
+            [disabled]="s.taken"
+            class="slot-button"
+            [ngClass]="{ 'selected': form.value.startTimeISO === s.startISO, 'taken': s.taken }"
+            (click)="pickSlot(s.startISO, s.taken)">
+            <mat-icon *ngIf="s.taken" class="slot-icon">block</mat-icon>
+            <mat-icon *ngIf="!s.taken && form.value.startTimeISO !== s.startISO" class="slot-icon">schedule</mat-icon>
+            <mat-icon *ngIf="form.value.startTimeISO === s.startISO" class="slot-icon">check_circle</mat-icon>
+            <span>{{ s.label }}</span>
+          </button>
+        </div>
+        <input type="hidden" formControlName="startTimeISO">
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>note</mat-icon>
+          Additional Notes
+        </h3>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Notes</mat-label>
+          <textarea matInput rows="3" formControlName="notes" placeholder="Add any additional information..."></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+          <mat-icon>event_available</mat-icon>
+          Book Appointment
+        </button>
+        <button mat-stroked-button type="button" routerLink="/appointments">
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Show existing appointments for selected doctor/date -->
+  <div class="existing-appointments" *ngIf="existingAppointments.length > 0">
+    <h3 class="appointments-title">
+      <mat-icon>event_busy</mat-icon>
+      Existing Appointments for Selected Day
+    </h3>
+    <div class="table-container">
+      <table mat-table [dataSource]="existingAppointments" class="appointments-table mat-elevation-z2">
+        <ng-container matColumnDef="time">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>access_time</mat-icon>
+              <span>Time</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let a">
+            <div class="time-range">
+              {{ a.startTime | date:'shortTime' }} - {{ a.endTime | date:'shortTime' }}
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="patient">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>person</mat-icon>
+              <span>Patient</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let a">
+            <strong>{{ getPatientName(a.patientId) }}</strong>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>info</mat-icon>
+              <span>Status</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let a">
+            <span class="badge status-badge" [ngClass]="a.status.toLowerCase()">{{ a.status }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="notes">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>notes</mat-icon>
+              <span>Notes</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let a">{{ a.notes || '—' }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['time', 'patient', 'status', 'notes']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['time', 'patient', 'status', 'notes'];" class="table-row"></tr>
+      </table>
+    </div>
+  </div>
+</div>
