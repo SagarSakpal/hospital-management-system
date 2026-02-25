@@ -7,6 +7,48 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent) 
   },
 
+  // Appointments
+  {
+    path: 'appointments',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/appointments/appointments.routes').then(m => m.APPOINTMENTS_ROUTES)
+  },
+
+  // Doctors
+  {
+    path: 'doctors',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/doctors/doctors.routes').then(m => m.DOCTORS_ROUTES)
+  },
+
+  // Patients
+  {
+    path: 'patients',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/patients/patients.routes').then(m => m.PATIENTS_ROUTES)
+  },
+
+  // Doctor-Patient Relationships
+  {
+    path: 'relationships',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/relationships/relationships.routes').then(m => m.RELATIONSHIPS_ROUTES)
+  },
+
+  // Medical Records
+  {
+    path: 'records',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/records/records.routes').then(m => m.RECORDS_ROUTES)
+  },
+
+  // Search
+  {
+    path: 'search',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/search/search.routes').then(m => m.SEARCH_ROUTES)
+  },
+
   // Protected areas (to be implemented)
   // { 
   //   path: 'admin', 

@@ -8,6 +8,7 @@ namespace Hospital.Application.Services
         Task<DoctorDto> GetAsync(int id, CancellationToken ct = default);
         Task<List<DoctorDto>> ListAsync(CancellationToken ct = default);
         Task UpdateAsync(int id, UpdateDoctorRequest request, string performedByUserId, CancellationToken ct = default);
+        Task PatchAsync(int id, PatchDoctorRequest request, string performedByUserId, CancellationToken ct = default);
         Task SoftDeleteAsync(int id, string performedByUserId, CancellationToken ct = default);
     }
 }

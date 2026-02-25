@@ -24,7 +24,7 @@ namespace Hospital.Api.Controllers
         public async Task<IActionResult> Assign([FromBody] AssignPatientRequest req, CancellationToken ct)
         {
             await _service.AssignAsync(req.DoctorId, req.PatientId, Actor, ct);
-            return Ok("Assigned successfully.");
+            return Ok(new { message = "Assigned successfully." });
         }
 
         [HttpPost("unassign")]
@@ -32,7 +32,7 @@ namespace Hospital.Api.Controllers
         public async Task<IActionResult> Unassign([FromBody] UnassignPatientRequest req, CancellationToken ct)
         {
             await _service.UnassignAsync(req.DoctorId, req.PatientId, Actor, ct);
-            return Ok("Unassigned successfully.");
+            return Ok(new { message = "Unassigned successfully." });
         }
 
         [HttpGet("doctor/{doctorId}/patients")]

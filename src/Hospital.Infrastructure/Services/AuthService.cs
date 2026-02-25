@@ -43,7 +43,21 @@ namespace Hospital.Infrastructure.Services
 
             var roles = await _userManager.GetRolesAsync(user);
 
-            var (accessToken, expiresAt) = _tokenService.GenerateAccessToken(user, roles);
+            // Look up entity ID based on role
+            int? entityId = null;
+            var role = roles.FirstOrDefault();
+            if (role == "Patient")
+            {
+                var patient = await _db.Patients.FirstOrDefaultAsync(p => p.UserId == user.Id && !p.IsDeleted);
+                entityId = patient?.Id;
+            }
+            else if (role == "Doctor")
+            {
+                var doctor = await _db.Doctors.FirstOrDefaultAsync(d => d.UserId == user.Id && !d.IsDeleted);
+                entityId = doctor?.Id;
+            }
+
+            var (accessToken, expiresAt) = _tokenService.GenerateAccessToken(user, roles, entityId);
             var refreshToken = _tokenService.GenerateRefreshToken();
 
             // store refresh token (rotate per login)
@@ -71,7 +85,22 @@ namespace Hospital.Infrastructure.Services
                 throw new UnauthorizedAccessException("Invalid user");
 
             var roles = await _userManager.GetRolesAsync(user);
-            var (accessToken, expiresAt) = _tokenService.GenerateAccessToken(user, roles);
+            
+            // Look up entity ID based on role
+            int? entityId = null;
+            var role = roles.FirstOrDefault();
+            if (role == "Patient")
+            {
+                var patient = await _db.Patients.FirstOrDefaultAsync(p => p.UserId == user.Id && !p.IsDeleted);
+                entityId = patient?.Id;
+            }
+            else if (role == "Doctor")
+            {
+                var doctor = await _db.Doctors.FirstOrDefaultAsync(d => d.UserId == user.Id && !d.IsDeleted);
+                entityId = doctor?.Id;
+            }
+            
+            var (accessToken, expiresAt) = _tokenService.GenerateAccessToken(user, roles, entityId);
 
             // rotate refresh token: revoke old, create new
             token.RevokedAt = DateTime.UtcNow;

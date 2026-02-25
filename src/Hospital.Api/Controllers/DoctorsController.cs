@@ -51,6 +51,15 @@ namespace Hospital.Api.Controllers
             return NoContent();
         }
 
+        [HttpPatch("{id:int}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Patch(int id, [FromBody] PatchDoctorRequest request, CancellationToken ct)
+        {
+            var performedBy = User?.Identity?.Name ?? "system";
+            await _service.PatchAsync(id, request, performedBy, ct);
+            return NoContent();
+        }
+
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SoftDelete(int id, CancellationToken ct)

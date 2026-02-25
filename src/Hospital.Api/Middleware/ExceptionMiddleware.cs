@@ -38,9 +38,14 @@ namespace Hospital.Api.Middleware
             {
                 await WriteProblem(context, StatusCodes.Status400BadRequest, be.Message);
             }
+            catch (UnauthorizedAccessException uae)
+            {
+                _logger.LogWarning(uae, "Unauthorized access attempt");
+                await WriteProblem(context, StatusCodes.Status401Unauthorized, uae.Message);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unhandled exception");
+                _logger.LogError(ex, "Unhandled exception: {Message}. StackTrace: {StackTrace}", ex.Message, ex.StackTrace);
                 await WriteProblem(context, StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }

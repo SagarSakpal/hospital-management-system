@@ -7,13 +7,21 @@ namespace Hospital.Application.Validation
     {
         public CreateAppointmentRequestValidator()
         {
-            RuleFor(x => x.DoctorId).GreaterThan(0);
-            RuleFor(x => x.PatientId).GreaterThan(0);
+            RuleFor(x => x.DoctorId)
+                .GreaterThan(0)
+                .WithMessage("DoctorId must be greater than 0.");
+            
+            RuleFor(x => x.PatientId)
+                .GreaterThan(0)
+                .WithMessage("PatientId must be greater than 0.");
+
             RuleFor(x => x.StartTime)
-                .Must(s => s > DateTime.UtcNow.AddMinutes(-1))
-                .WithMessage("StartTime must be in the future or near-present.")
-                .Must(s => s.Minute == 0 || s.Minute == 30) // If you want 30-min alignment. For 1-hour alignment use == 0 only
-                .WithMessage("StartTime must align to 0 or 30 minutes (adjust rule if needed).");
+                .Must(x => x.Minute == 0)
+                .WithMessage("Appointments must start on the hour (00 minutes).")
+                .Must(x => x > DateTime.UtcNow.AddMinutes(-5))
+                .WithMessage("Start time must be in the future.")
+                .NotEmpty()
+                .WithMessage("Start time is required.");
         }
     }
 }

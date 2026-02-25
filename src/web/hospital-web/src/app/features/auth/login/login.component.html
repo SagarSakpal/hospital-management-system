@@ -38,8 +38,9 @@
         </div>
       </div>
 
-      <div *ngIf="errorMessage" class="alert alert-error">
-        {{ errorMessage }}
+      <!-- Login Error Message -->
+      <div *ngIf="showError()" class="alert alert-error" role="alert">
+        <strong>Error:</strong> {{ errorMessage() }}
       </div>
 
       <button

@@ -20,9 +20,11 @@ using FluentValidation.AspNetCore;
 using Hospital.Application.Common.Interfaces.Persistence;
 using Hospital.Application.Common.Mapping;
 using Hospital.Application.Services;
-using Hospital.Infrastructure.Persistence;
 using Hospital.Infrastructure.Persistence.Repositories;
 using Hospital.Api.Middleware;
+using Hospital.Infrastructure.Audit;
+using Hospital.Infrastructure.Caching;
+using Hospital.Infrastructure.Files;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -158,6 +160,18 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IDoctorPatientService, DoctorPatientService>();
+builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
+builder.Services.AddScoped<IFileStorage, LocalFileStorage>();
+builder.Services.AddScoped<IAuditLogger, AuditLogger>();
+builder.Services.AddScoped<ISearchService, SearchService>();
+
+builder.Services.Configure<CacheSettings>(builder.Configuration.GetSection("CacheSettings"));
+builder.Services.AddMemoryCache();
+
+builder.Services.AddScoped<IAppCache, MemoryAppCache>();
+builder.Services.AddScoped<ILookupService, LookupService>();
+
+
 
 var app = builder.Build();
 
@@ -191,7 +205,7 @@ if (app.Environment.IsDevelopment())
 
 // Exception middleware (must be early)
 app.UseExceptionMiddleware();
-
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseCors("dev");
 app.UseAuthentication();

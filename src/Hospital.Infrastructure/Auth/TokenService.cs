@@ -18,7 +18,7 @@ namespace Hospital.Infrastructure.Auth
             _settings = settings.Value;
         }
 
-        public (string AccessToken, DateTime ExpiresAt) GenerateAccessToken(ApplicationUser user, IList<string> roles)
+        public (string AccessToken, DateTime ExpiresAt) GenerateAccessToken(ApplicationUser user, IList<string> roles, int? entityId = null)
         {
             var expires = DateTime.UtcNow.AddMinutes(_settings.DurationInMinutes);
 
@@ -30,6 +30,12 @@ namespace Hospital.Infrastructure.Auth
                 new(ClaimTypes.Email, user.Email ?? string.Empty),
                 new(ClaimTypes.Name, user.UserName ?? user.Email ?? user.Id)
             };
+
+            // Add entity ID claim for Patient/Doctor
+            if (entityId.HasValue)
+            {
+                claims.Add(new Claim("EntityId", entityId.Value.ToString()));
+            }
 
             foreach (var role in roles)
             {

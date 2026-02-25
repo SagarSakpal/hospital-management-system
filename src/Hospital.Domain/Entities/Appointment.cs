@@ -14,7 +14,7 @@ public class Appointment
     public string Status { get; set; } = "Scheduled"; // Completed/Cancelled later
     public string? Notes { get; set; }
 
-    public int CreatedByUserId { get; set; }   // Who made the booking (admin/doctor/nurse/patient)
+    public string CreatedByUserId { get; set; } = default!;   // Who made the booking (admin/doctor/nurse/patient)
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public Doctor? Doctor { get; set; }

@@ -25,6 +25,18 @@ namespace Hospital.Application.Services
 
         public async Task<DoctorDto> CreateAsync(CreateDoctorRequest request, string performedByUserId, CancellationToken ct = default)
         {
+            // Check for duplicate userId
+            if (await _doctors.UserIdExistsAsync(request.UserId, null, ct))
+            {
+                throw new BusinessRuleException($"A doctor with UserId '{request.UserId}' already exists.");
+            }
+
+            // Check for duplicate contact
+            if (await _doctors.ContactExistsAsync(request.Contact, null, ct))
+            {
+                throw new BusinessRuleException($"A doctor with Contact '{request.Contact}' already exists.");
+            }
+
             var entity = _mapper.Map<Doctor>(request);
             await _doctors.AddAsync(entity, ct);
             await _uow.SaveChangesAsync(ct);
@@ -52,7 +64,50 @@ namespace Hospital.Application.Services
             var entity = await _doctors.GetByIdAsync(id, ct)
                 ?? throw new NotFoundException(nameof(Doctor), id);
 
+            // Check for duplicate contact (excluding current doctor)
+            if (await _doctors.ContactExistsAsync(request.Contact, id, ct))
+            {
+                throw new BusinessRuleException($"A doctor with Contact '{request.Contact}' already exists.");
+            }
+
             _mapper.Map(request, entity);
+            await _doctors.UpdateAsync(entity, ct);
+            await _uow.SaveChangesAsync(ct);
+
+            // TODO: Audit
+        }
+
+        public async Task PatchAsync(int id, PatchDoctorRequest request, string performedByUserId, CancellationToken ct = default)
+        {
+            var entity = await _doctors.GetByIdAsync(id, ct)
+                ?? throw new NotFoundException(nameof(Doctor), id);
+
+            // Update only provided fields
+            if (request.Name != null)
+            {
+                entity.Name = request.Name;
+            }
+
+            if (request.SpecializationId.HasValue)
+            {
+                entity.SpecializationId = request.SpecializationId.Value;
+            }
+
+            if (request.ExperienceYears.HasValue)
+            {
+                entity.ExperienceYears = request.ExperienceYears.Value;
+            }
+
+            if (request.Contact != null)
+            {
+                // Check for duplicate contact (excluding current doctor)
+                if (await _doctors.ContactExistsAsync(request.Contact, id, ct))
+                {
+                    throw new BusinessRuleException($"A doctor with Contact '{request.Contact}' already exists.");
+                }
+                entity.Contact = request.Contact;
+            }
+
             await _doctors.UpdateAsync(entity, ct);
             await _uow.SaveChangesAsync(ct);
 
